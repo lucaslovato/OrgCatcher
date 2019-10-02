@@ -47,7 +47,7 @@ gco_branches = arr => {
     })
 }
 
-get_path = data => {
+get_org_files = data => {
     let aux;
     let paths = [];
     for(let i in data){
@@ -55,6 +55,11 @@ get_path = data => {
         if(aux[aux.length - 1] === 'g' && aux[aux.length - 2] === 'r' && aux[aux.length - 3] === 'o') 
             paths.push(aux);
     }
+    return paths;
+}
+
+get_path = data => {
+    let paths = get_org_files(data);
     let abs_path = [];
     let my_pc_path = '/home/lovato/Documents/drawbridge/reports/';
 
@@ -93,6 +98,37 @@ cp_files = files_path => {
 }
 
 turning_into_html = () =>{
-    let this_path = path.resolve() + '/HtmlFiles';
-    
+    let this_path = path.resolve() + '/ReportsOrg';
+    //: ${ORG_EMACS_EL:='~/.emacs'}
+    //emacs --batch --load $ORG_EMACS_EL --file "$1" --funcall org-html-export-to-html
+    let all_files;
+    cmd.get(
+        `
+            cd ${this_path}
+            ls
+        `,
+        function(err, data, stderr){
+            all_files =  data.split('\n');
+            all_files = get_org_files(all_files);
+            if(!err) moving_to_html_path(all_files);
+            else console.log(err);
+        }
+    )
+}
+
+moving_to_html_path = data =>{
+    let this_path = path.resolve() + '/ReportsOrg';
+    data.forEach( element => {
+        cmd.get(
+            `
+                cd ${this_path}
+                emacs ${element} --batch -f org-html-export-as-html --kill
+            `,
+            //PLEASE: DO NOT REMOVE --BATCH
+            function(err, data, stderr){
+                if(!err) console.log(data);
+                else console.log(err);
+            }
+        )
+    })
 }
