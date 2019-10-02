@@ -1,0 +1,64 @@
+#+TITLE: Sensors of the small concrete block
+
+* Introduction
+   We have built a small concrete block(check Figure 1, to see our first
+   concrete block sample), to check our sensor's behavior, in order to adapt and
+   prepare them for the official Drawbridge safe. This report intends to update
+   the reader on the tests we're currently doing with the sensors(microphone,
+   accelerometer, gyroscope and temperature) embedded in concrete.
+
+    #+CAPTION: Picture of Concrete Block we built
+    #+NAME: moduleConcrete
+    [[./photos-videos/ConcreteBlock.jpeg]]
+
+
+   Before reading this report it's recommended that the reader checks these other
+   reports on the development of Drawbridge for context.
+
+     - [[https://git.brickabode.com/drawbridge/drawbridge/blob/master/reports/sensors/temperature/report/temperatureSensors.org][Temperature Sensor]]
+     - [[https://git.brickabode.com/drawbridge/drawbridge/blob/microphone-sensor-report/reports/sensors/microphone/microphone-report.org][Microphone Sensor]]
+     - [[https://git.brickabode.com/drawbridge/drawbridge/blob/report-SNS001/reports/sensors/accelerometers/report/accelerometersReport.org][Accelerometer Report]]
+
+
+
+* Sensors
+
+** Accelerometer
+    The accelerometer is fully functional, capturing changes when the concrete
+    block is hit, rotated or moved. The image below shows a print of measures
+    taken from the GY-521 ( accelerometer).
+
+    #+CAPTION: Print of the accelemeter's readings
+    #+NAME: module
+    [[./photos-videos/GY521Print.png]]
+
+** Microphone
+    The microphone can barely capture vibrations, only registering really hard
+    hits to the concrete, over multiple frequencies. It didn't detect nothing
+    when was tried to pierce the concrete with a small drill, which is worrying
+    since this was expected to be easily noticeable. In order to solve that on
+    the next sensor testing we will try to wrap the microphone inside some
+    material capable of amplifying the vibrations on the concrete. Another
+    possible solution is acquiring some metal proximity sensors, PNP NO 3-WIRE
+    is an example, this way we could know if a drill is approaching the
+    concrete.
+
+    #+CAPTION: Microphone Testing results
+    #+NAME: mic
+    #+ATTR_HTML: :width 50% :height 50%
+    #+ATTR_ORG: :width 50
+    [[./photos-videos/MicrophonePrint.png]]
+
+** Temperature
+    The temperature sensor will need to be tested again on our next
+    concrete test, since the one we tested on this batch was not working,
+    probably one of the wires inside broke off.
+
+* Conclusion
+
+   It was a interesting test, since those sensor's good behavior is fundamental
+   for achieving our goal of having a secure safe. Only one of the three sensors
+   could be validated on this test, which is the accelerometer, the remaining
+   sensors will need new tests with different approaches to embedding them on
+   concrete.
+   Also if you feel like checking all the codes used for the sensor testing can be found at [[https://git.brickabode.com/drawbridge/drawbridge/tree/smallConcreteBlockTest/reports/sensors/ConcreteBlockTest/codes][Codes]]

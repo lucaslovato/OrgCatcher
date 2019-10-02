@@ -1,0 +1,283 @@
+#+TITLE: Temperature sensors
+#+TASK_ID: SNS002
+
+* Introduction 
+** Purpose
+The purpose of this report is to introduce the reader to the DS18B20 temperature
+sensor used on the Drawbridge project. After reading, the reader should be able
+to:
+  - Understand what is the sensor
+  - Understand how the sensor works
+  - Understand how this sensor will help in the Drawbridge project
+  - Mount a little circuit containing some sensors
+  - Understand why this circuit was needed in order to test the sensors
+  - Execute a program on the circuit that reads the data from the sensors
+
+** What is this sensor 
+
+The sensor we are using is called DS18B20 sensor, the waterproof version. It has
+3 wires: two for power and one for data. Below is an image of it:
+
+#+CAPTION: Sensor module: the metal cillinder is the part that's sensitive to temperature changes
+#+NAME: module
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100
+[[../photos-videos/DS18B20.jpg]] 
+
+** How the sensor works 
+
+This sensor uses the [[https://en.wikipedia.org/wiki/1-Wire][1-wire communication protocol]] (be sure not to exceed the
+recommended [[https://www.loxone.com/enen/kb/wiring-1-wire-devices/][20 devices per bus]]).
+ 
+When you connect this sensor to a functioning circuit, it has a unique virtual
+address, represented by a 64-bit number. This means we can have up to 2^64
+sensors connected on the same wire, called a bus (although 2^64 is not a
+feasible number, the data bus would become too slow). 
+
+More information about the sensor on the [[https://datasheets.maximintegrated.com/en/ds/DS18B20.pdf][datasheet]] (the datasheet is the source
+of truth, containing all the information about the sensor).
+
+** How will it fit into Drawbridge?
+
+We must monitor the temperature inside and outside the HSM for a few reasons:
+ - The electronic components inside work best at a certain temperature range. If
+   the temperature is out of this range, the components might not work well
+   and/or be damaged.
+ - The security unit should detect temperature changes inside the box and
+   destroy the keys if the lower and upper thresholds are ever crossed
+
+For more information on the top-level design of Drawbridge, check the
+[[file:../../../../doc/newspec.org::#introduction][documentation]].
+
+There will be in total 24 temperatures sensors on the project (4 for each face
+of the HSM), and they all will be cast inside of the concrete of the HSM.
+
+* Task description
+
+This task’s goal is to analyze if the DS18B20 is an adequate temperature sensor
+  for Drawbridge. A few of them are available and all were pre-tested in isolation
+  with an Arduino Uno. For this task, the following should be done:
+
+  validate that they work in a network,
+  use either ESP32 or STM32 as the processing unit, and
+  validate software for device works with multiple sensors and that it works
+    on the chosen processing unit.
+
+By the end of the task, a report must be written approving or failing this
+sensor, besides presenting all the work done to do so.
+
+* System requirements
+
+Hardware used:
+ - One ESP32 module
+ - Two 10K resistors (used in parallel)
+ - 6 DS18B20 temperature sensors
+ - One 830 points breadboard
+ - USB cable
+ - 23 jumper cables
+
+Software used:
+ - Arduino IDE 1.8.9
+ - [[https://github.com/PaulStoffregen/OneWire][OneWire]] library
+ - [[https://github.com/milesburton/Arduino-Temperature-Control-Library][DallasTemperature]] library
+ - [[https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-mac-and-linux-instructions/][ESP32 add on]]
+
+You must clone the 2 libraries into the Arduino "libraries" folder.
+
+* What was done
+  
+This section will give the reader a brief overview of the steps taken to achieve
+the completion of the task, details about the mounting of the circuit used on
+the task and why the following circuit was needed to test them. To better
+understand the circuit, this section will provide some photos, some schematics
+and a video of the circuit working.
+
+** Why a circuit?
+
+The sensors themselves don't help much if they are just turned on, we need to
+see the data from the sensors so we can use it. One way of see this data is
+connecting the sensors to a [[https://internetofthingsagenda.techtarget.com/definition/microcontroller][microcontroller]] via a circuit, and that's exactly
+what this report's circuit is for. The circuit was connected to an [[https://en.wikipedia.org/wiki/ESP32][ESP32
+microcontroller]], programmed through the [[https://en.wikipedia.org/wiki/Arduino_IDE][Arduino IDE]] and checked the output. All
+of the details will be provided further on.
+
+** Overview
+   :PROPERTIES:
+   :CUSTOM_ID: overview
+   :END:
+
+This is an overview of what was done in order to achieved the completion of the
+task. 
+
+First, an initial research was made to find out how to use the temperature
+sensor with an ESP32 module. [[https://randomnerdtutorials.com/esp32-with-multiple-ds18b20-temperature-sensors/][This tutorial about multiple DS18B20 sensors with
+an ESP32]] was found and it was a really good jumpstart. The tutorial has clear
+explanations about the usage of the sensors and the requirements to get them
+working. When reading it, it was found that the [[https://github.com/PaulStoffregen/OneWire][OneWire]] and [[https://github.com/milesburton/Arduino-Temperature-Control-Library][DallasTemperature]]
+code libraries were required for properly program the code, and in order to
+upload the code to the circuit a [[*Setting the Arduino IDE][setup of the environment]] was needed.
+
+
+After that, it was found that the DallasTemperature library already comes with a
+code [[https://github.com/milesburton/Arduino-Temperature-Control-Library/blob/master/examples/Multiple/Multiple.pde][example]] (the Arduino IDE already comes with [[https://www.arduino.cc/en/Tutorial/BuiltInExamples][built-in examples]] to use, and
+some third-party libraries might as well) to use with one single sensor or
+multiple sensors, so the latter was tested as well. This is the final version of
+the code:
+
+#+NAME: Temperature sensors
+#+INCLUDE: "../report/code/MultipleTemperatureSensors.ino" src c++
+
+ 
+When the circuit was tested and running properly, the schematic was drawn and
+some photos were taken:
+
+*** Photos of the setup
+
+
+#+CAPTION: Connections on the breadboard for the 6 sensors used on the task
+#+NAME: Circuit finished 1
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100
+[[../photos-videos/Temperature-1.jpg]]
+
+#+CAPTION: Close-up of the ESP32 microcontroller
+#+NAME: Circui finished 2
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100
+[[../photos-videos/Temperature-2.jpg]]
+ 
+#+CAPTION: Top view of the circuit showing the wires connected to the sensors
+#+NAME: Circuit finished 3
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100
+[[../photos-videos/Temperature-3.jpg]]
+ 
+#+CAPTION: Another close up of the ESP32. We can see the two resistors on the far right side of the wires
+#+NAME: Circuit finished 4
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100
+[[../photos-videos/Temperature-4.jpg]]
+ 
+#+CAPTION: A top view of the circuit
+#+NAME: Circuit finished 5
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100
+[[../photos-videos/Temperature-5.jpg]]
+
+*** Schematics
+
+This section presents a schematics made on gEDA software. It is available on PDF
+and .sch (the format for the gEDA software):
+
+#+CAPTION: Circuit schematics with 6 sensors
+#+NAME: Schematic
+#+ATTR_HTML: :width 50% :height 50%
+#+ATTR_ORG: :width 100px
+[[../photos-videos/sensorSchematic.jpg]]
+
+  - [[../temperature/schematics/temperatureSensors-pdf.pdf][Schematics PDF]]
+  - [[../temperature/schematics/temperatureSensors.sch][gEDA software schematics]]
+
+
+Afterwards, a video of the setup running was made to test it. The section below
+explains more about the video and its output:
+
+*** Video
+
+A little [[../photos-videos/MultipleTemperature-compressed.mp4][video]] of the circuit working was made, and this section explains every
+detail of it. How to understand the video? First, here are some steps taken
+before the recording to prepare the setup:
+  - The [[../code/MultipleTemperature.ino][code]] was opened on the Arduino IDE;
+  - The circuit was plugged on the computer via USB cable;
+  - After properly setting the IDE, the code was uploaded to the ESP32;
+  - After uploading, the code automatically starts to run;
+  - Then, the [[https://www.arduino.cc/reference/en/language/functions/communication/serial/][serial monitor]] of the IDE was opened to check the results (see the
+    **references** for more information on the serial monitor);
+
+The video shows the testing of the circuit by pressing one of the sensors with
+the hand, and we can see the temperature on the screen increasing quite fast, so
+that also means that the sensor has a good response time and accuracy. The
+circuit was also tested by diving one sensor in a cup with cold water and a cup
+with hot coffee.
+    
+* Results
+** Output
+This is the output data of the temperature sensors shown on the Arduino's serial
+monitor with the video above, and a breakdown of what the output means:
+
+Output:
+
+#+BEGIN_SRC text
+Locating devices...Found 6 devices.
+
+Sensor 1 : 25.19C  |  77.34F
+
+Sensor 2 : 25.31C  |  77.56F
+
+Sensor 3 : 24.75C  |  76.55F
+
+Sensor 4 : 25.25C  |  77.45F
+
+Sensor 5 : 25.44C  |  77.79F
+
+Sensor 6 : 25.44C  |  77.79F
+#+END_SRC
+
+Let's breakdown the first line:
+
+ - Sensor 1 :: This indicates what is the sensor that the module is reading data from
+ - 25.19C ::  This is the temperature in Celsius that was read
+ - 77.34F :: This is the temperature in Fahrenheit that was read
+
+* Conclusion and recommendations
+
+The DS18B20 is an excellent choice for the project, why? The best thing about it
+is how easy it's to use and program. The official manufacturer already provides
+us the code library (check **references** for DallasTemperature library), and this
+library already comes with some examples on the usage of the sensor. Also, it
+has a great response time on the readings (check datasheet) and good
+accuracy of the values (tested with the ambient's temperature, the results were
+the same), something that is really useful for the security purpose of the
+project.
+
+* References
+
+- [[https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-mac-and-linux-instructions/][Installing ESP32 add-on on Linux and Mac]]
+
+- [[https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/][Installing ESP32 add-on on Windows]]
+
+- [[https://github.com/espressif/arduino-esp32/tree/master/libraries][ESP32 library for Arduino IDE]]
+
+- [[https://github.com/PaulStoffregen/OneWire][OneWire library]]
+
+- [[https://github.com/milesburton/Arduino-Temperature-Control-Library][DallasTemperature library]]
+
+- [[https://www.arduino.cc/reference/en/language/functions/communication/serial/][Arduino serial monitor]]
+
+- PDF [[../temperature/schematics/temperatureSensors-pdf.pdf][Schematics]]
+* Appendix
+*** Setting the Arduino IDE 
+    :PROPERTIES:
+    :CUSTOM_ID: setting_arduino_ide
+    :END:
+Why do we need to setup the IDE? The Arduino IDE was made to work with Arduino
+boards, so to make other boards/microcontroller work with it, some
+configurations are needed.
+ 
+In order to properly upload the code to the ESP32 and get it working, we first
+need to change a few settings on the Arduino IDE. First, make sure that the
+correct libraries and the boards are installed. The following link has a great
+and easy tutorial to setup the IDE correctly:
+
+- Installing ESP32 add-on on Linux and Mac:
+  [[https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-mac-and-linux-instructions/]] 
+
+  Python serial must be installed for proper uploading to the ESP32. In Ubuntu,
+  this can be done via: $ sudo apt install python3-serial python-serial.
+
+- Installing ESP32 add-on on Windows:
+  https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
+
+- You must clone the OneWire and DallasTemperature libraries to the "libraries"
+  folder on arduino installation folder.
+

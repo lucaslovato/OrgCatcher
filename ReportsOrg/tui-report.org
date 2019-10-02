@@ -1,0 +1,38 @@
+#+TITLE: TUI Report
+
+* Introduction
+  
+  In order to decide which framework we would use to build our TUI (Text User
+  Interface) we searched for Python and C/C++ frameworks.
+
+  After looking at various frameworks, we chose the Asciimatics (a python
+  framework) because it was easy to manipulate (create windows and commands).
+
+* Asciimatics Informations
+
+  Asciimatics is a package to help people create full-screen text UIs (from
+  interactive forms to ASCII animations) on any platform. It is licensed under
+  the Apache Software Foundation License 2.0.
+
+  Currently the API has been proven to work on CentOS 6 & 7, Raspbian (i.e.
+  Debian wheezy), Ubuntu 14.04, Windows 7, 8 & 10 and OSX 10.11, so it should
+  also work for our purposes.
+
+  - [[https://github.com/peterbrittain/asciimatics][Repository]]
+  - [[https://asciimatics.readthedocs.io][Documentation]]
+
+* Frameworks Searched
+** Python
+ - https://npyscreen.readthedocs.io/introduction.html
+ - https://codeburst.io/building-beautiful-command-line-interfaces-with-python-26c7e1bb54df
+ - http://urwid.org/
+ - https://docs.python.org/2/howto/curses.html
+ - https://github.com/peterbrittain/asciimatics
+ - https://github.com/prompt-toolkit/python-prompt-toolkit
+ - https://github.com/glamp/bashplotlib
+ - https://github.com/tartley/colorama
+
+** C/C++
+ - https://hackernoon.com/building-reactive-terminal-interfaces-in-c-d392ce34e649
+ - https://github.com/a-n-t-h-o-n-y/CPPurses
+ - https://github.com/fffaraz/awesome-cpp/#cli
